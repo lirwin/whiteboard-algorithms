@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+    <head>
+     
+        <title>Cyan Whiteboard Algorithms</title>
+
+        <!-- link rel="stylesheet" href="css/main.css" -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+        <style type="text/css">
+            #fibNumber, #recFibNumber {
+                background-color: #EEE;
+                float: left;
+            }
+            input, #fibNumber, #recFibNumber {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                padding: 2px 5px;
+                width: 100px;
+                height: 20px;
+                border: 1px solid #000;
+            }
+            .clear {
+                clear: both;
+            }
+            .floatLeft {
+                float:left;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>1. String Permutations</h3>
+        <p>Enter string:&nbsp;&nbsp;<input  type="text" id="inputStr" name="inputStr" /></p>
+        <p><div class="floatLeft">Answer All Possible String Permutations:&nbsp;&nbsp;</div><div id="permutations"></div></p>
+        <div class="clear"></div>
+
+        <h3>2. Longest Palindrome(s)</h3>
+        <p>Enter string:&nbsp;&nbsp;<input  type="text" id="inputPal" name="inputPal" /></p>
+        <p><div class="floatLeft">Answer Longest Palindrome(s):&nbsp;&nbsp;</div><div id="palindromes"></div></p>
+        <div class="clear"></div>
+
+        <h3>3. Tree Traversal (skipping)</h3>
+
+        <h3>4.  Fibonacci Sequence:  0, 1, 1, 2, 3, 5, 8, ...</h3>
+        <ol type="a">
+            <li>
+                <h4>Iterative Solution</h4>
+                <p>Enter Fibonacci Sequence Number N (0, 1, 2, 3, ...):&nbsp;&nbsp;<input  type="text" id="fibSeq" name="fibSeq" /></p>
+                <p><div class="floatLeft">Answer Nth Fibonacci Number in Sequence fib(N):&nbsp;&nbsp;</div><div id="fibNumber"></div></p>
+                <div class="clear"></div>
+            </li>
+            <li>
+                <h3>Recursive Solution</h3>
+                <p>Enter Fibonacci Sequence Number N (0, 1, 2, 3, ...):&nbsp;&nbsp;<input  type="text" id="recFibSeq" name="recFibSeq" /></p>
+                <p><div class="floatLeft">Answer Nth Fibonacci Number in Sequence fib(N):&nbsp;&nbsp;</div><div id="recFibNumber"></div></p>
+                <div class="clear"></div>
+            </li>
+        </ol>
+
+        <h3>5. Find Repeating Number in Array of Numbers (1, 2, ...1000000) (have working example for small array)</h3>
+        <button id="repeatNum">Find Reating Number</button>
+        <div class="clear"></div>
+
+
+        <script type="text/javascript">
+
+        $(function() {
+            
+                /* FIBONACCI NUMBER ITERATIVE SOLUTION
+                 * params: seqNum is Fibonacci sequence number
+                 * return:  Fibonacci number at that sequence number (index starts at 0)
+                 * data structure:  dynamic array of Fibonacci numbers created by pushing the sum of the last 2 elements onto the array
+                */
+
+                function getFibNum(seqNum) {
+                    var fibNumbers = [0,1],
+                        length = 0;
+                    switch(seqNum)  {
+                        case 0:
+                          return "0";
+                          break;
+                        case 1:
+                          return "1";
+                          break;
+                        default:
+                          for (var i=0; i <= (seqNum - 2); i++) {
+                                length = fibNumbers.length;
+                                fibNumbers.push(fibNumbers[length - 1] + fibNumbers[length - 2]);
+                          }  
+                          return (fibNumbers[seqNum]);                
+                    }
+                    
+                }
+
+               /*  
+                 * user input Fibonacci sequence number event handler
+                 * checks input to make sure it is an integer > 0
+                 * displays returned Fibonacci number
+                */
+                $("input#fibSeq").change(function(evt) {
+                    var value = $(this).val();
+                    if (!(Math.floor(value) == value && $.isNumeric(value) && value >= 0))  {
+                        alert("Please enter a positive integer");
+                    }
+                    else {
+                        value = parseInt(value, 10);
+                        $("#fibNumber").text("" + getFibNum(value));
+                    }
+
+                });
+
+
+                /*  FIBONACCI NUMBER RECURSIVE SOLUTION
+                 *
+                 * NOT MY SOLUTION...HAD TO GET HELP FROM VARIOUS SITES ON GOOGLE
+                 * 
+                 * user input Fibonacci sequence number event handler
+                 * checks input to make sure it is an integer > 0
+                 * displays returned Fibonacci number
+                */
+                function recGetFibNum (seqNum) {
+                    if (seqNum < 2) {
+                        return (seqNum);
+                    } else {
+                        return recGetFibNum (seqNum - 1) + recGetFibNum (seqNum - 2);
+                    }
+                    
+                }
+
+                /* 
+                 * user input Fibonacci sequence number event handler
+                 * checks input to make sure it is an integer > 0
+                 * displays returned Fibonacci number
+                */
+                $("input#recFibSeq").change(function(evt) {
+                    var value = $(this).val();
+                    if (!(Math.floor(value) == value && $.isNumeric(value) && value >= 0))  {
+                        alert("Please enter positive integer");
+                    }
+                    else {
+                        value = parseInt(value, 10);
+                        var fibNumbers = [0, 1];
+                        $("#recFibNumber").text("" + recGetFibNum(value));
+                    }
+
+                });
+
+                /*  FIND ALL STRING PERMUTATIONS RECURSIVE SOLUTION
+                 *
+                 * NOT MY SOLUTION...GOT IT FROM http://stackoverflow.com/questions/5232295/is-there-any-pre-built-method-for-finding-all-permutations-of-a-given-string-in
+                 *
+                */
+
+                $("input#inputStr").change(function(evt) {
+                    var outputStr = [];
+                    var count = 0;
+                    var duplicate = false;
+
+                    function findAllPermutations(str, index) {
+
+                        for (var i = index; i < str.length; i++) {
+                            var newstr;
+
+                            if (index == i) newstr = str;
+                                else newstr = swapLetters(str, index, i);
+
+                            if (!duplicate) {
+                                count++;
+                                outputStr.push(newstr);
+                                if (i == index) duplicate = true;
+                            } else if (i != index) duplicate = false;
+
+                            findAllPermutations(newstr, index + 1);
+                          }
+                      }
+
+                    function swapLetters(str, index1, index2) {
+                        if (index1 == index2) return str;
+                        str = str.split("");
+                        var temp = str[index1];
+                        str[index1] = str[index2];
+                        str[index2] = temp;
+                        return str.join("");
+                    }
+              
+                    findAllPermutations ($(this).val(), 0);
+                    $("#permutations").html(outputStr.join(", ") + "<br />" + "Count: " + count);
+
+                });
+
+                /*  FIND LONGEST PALINDROMES IN STRING
+                 *  algorithm:  walks through array first finding all odd palidromes, walking outward (and checking for palindrome) starting from a single element *  in array
+                 *  then checks for all even palindromes by grabbing 2 consecutive elements in string, then using same procedure as for odd
+                 * 
+                 * 
+                */
+                $("input#inputPal").change(function(evt) {
+        
+                    //return true if str is a palindrome, otherwise return false
+                    //palindrome must be at least 2 char 
+                    function isPalindrome (str) {
+                        var reverse = str.split("").reverse().join("");
+
+                        if (str.length == 0 || str.length == 1) return false;
+                        if (str === reverse) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+
+                    }
+
+                    function findAllPalindromes (str) {
+                        var outputStr = [];
+                        var i, j, offset;
+
+                        //odd palindromes is offset = 0 and even palindromes is offset = 1
+                        for (offset = 0; offset < 2; offset++) {
+                            for (var index = 0; index < str.length; index++) {
+                                for(i = index, j = index + offset; i >= 0 && j < str.length; i--, j++) {
+                                     var currStr = str.slice (i, j + 1);
+                                     if (currStr.length > 1) {
+                                        if (isPalindrome (currStr)) {
+                                            outputStr.push(currStr);
+                                        }
+                                        else {
+                                            break;
+                                        }
+                                     }                                   
+                                }
+                                
+                            }
+                        
+                        }
+                        return outputStr;
+                            
+                    }
+                    //find the longest palindrome in the array str
+                    function findLongestPalindrome (str) {
+                        var outputStr = findAllPalindromes(str); 
+                        var longest = 0;
+
+                        if (outputStr.length == 0){
+                            return outputStr;
+                        }
+
+                        longest = outputStr[0].length;
+                        var tempStr = new Array(outputStr[0]);
+                        for (var i = 0; i < outputStr.length - 1; i++) {
+                            if (outputStr[i + 1].length > longest) {
+                                tempStr = $.makeArray(outputStr[i + 1]);
+                                longest = outputStr[i + 1].length;
+                            } else if (outputStr[i + 1].length == longest) {
+                                tempStr.push(outputStr[i + 1]);
+                            }                   
+                        }
+                        return tempStr;
+                    }  
+                    //only accept alphanumeric chars for input string    
+                    var value = $(this).val();
+                    var regx = /^[A-Za-z0-9]+$/;
+ 
+                    if (!regx.test(value)) {
+                        alert("Alphanumeric characters only allowed!");
+                    }
+                    //get longest palindromes and display result
+                    else {
+                         var result = findLongestPalindrome (value);
+                         $("#palindromes").html(result.join(", ") + "<br />" + "Count: " + result.length);
+                         
+                    }                                      
+
+                });
+
+               /*  FIND THE REPEATING NUMBER IN THE ARRAY 
+                 *  MY SOLUTION...SIMPLIFIED ARRAY
+                 * 
+                 * 
+                */
+                function createArray (begNum, endNum) {
+                    var newArr = [];
+                    var index = 0;
+
+                    for (var i = begNum; i <= endNum; i++, index++) {
+                        newArr[index] = i;
+                    }
+                    return newArr;
+                }
+
+                function findRepeating(arr, size) {
+                  var repeats = [];
+                  
+                  for (var i = 0; i < size; i++) {
+                    for (var j = i+1; j < size; j++)
+                      if(arr[i] == arr[j]) {
+                        repeats += arr[i];
+
+                      }
+                  }
+                  return(repeats);
+                }    
+                 
+                
+                $("button#repeatNum").click(function(evt) {
+                    var arr = createArray(1, 25);
+                    alert("Array: " + arr);
+                    arr[6] = 9;
+                    alert("Array with duplicate: " + arr);
+                    alert(" Repeating elements are: " + findRepeating(arr, arr.length));
+
+                });
+
+
+
+
+        });
+        </script>
+    
+    </body>
+</html>
